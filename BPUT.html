@@ -1,0 +1,1264 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ayam Baput — Order Queue</title>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap');
+
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
+
+body{
+  font-family:'DM Sans',sans-serif;
+  background:#f4f1eb;
+  color:#191713;
+}
+
+.container{
+  max-width:520px;
+  margin:auto;
+  min-height:100vh;
+  background:#fffdf9;
+  box-shadow:0 0 40px rgba(0,0,0,.08);
+}
+
+header{
+  background:#171612;
+  color:white;
+  padding:34px 24px 30px;
+  border-radius:0 0 28px 28px;
+}
+
+.brand{
+  font-size:13px;
+  letter-spacing:3px;
+  opacity:.65;
+  text-transform:uppercase;
+}
+
+h1{
+  font-family:'Playfair Display',serif;
+  font-size:34px;
+  margin-top:8px;
+}
+
+.subtitle{
+  margin-top:7px;
+  color:#c8c4ba;
+  font-size:14px;
+}
+
+.queue{
+  margin-top:22px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  background:#26251f;
+  padding:14px 16px;
+  border-radius:16px;
+}
+
+.queue small{
+  color:#aaa69c;
+}
+
+.queue strong{
+  font-size:25px;
+  color:#fff;
+}
+
+.content{
+  padding:25px 20px 100px;
+}
+
+.section-title{
+  font-size:13px;
+  font-weight:700;
+  letter-spacing:1.5px;
+  text-transform:uppercase;
+  margin-bottom:15px;
+  color:#777269;
+}
+
+.menu{
+  display:flex;
+  flex-direction:column;
+  gap:13px;
+}
+
+.item{
+  background:white;
+  border:1px solid #e8e3da;
+  border-radius:20px;
+  padding:18px;
+  transition:.2s;
+}
+
+.item:hover{
+  transform:translateY(-2px);
+  box-shadow:0 8px 25px rgba(0,0,0,.07);
+}
+
+.item-top{
+  display:flex;
+  justify-content:space-between;
+  gap:15px;
+}
+
+.item h2{
+  font-size:17px;
+  line-height:1.35;
+}
+
+.icon{
+  width:45px;
+  height:45px;
+  border-radius:14px;
+  background:#f3eee4;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:22px;
+  flex-shrink:0;
+}
+
+.item p{
+  margin-top:7px;
+  color:#817b71;
+  font-size:12px;
+}
+
+.price{
+  margin-top:10px;
+  font-size:16px;
+  font-weight:700;
+  color:#b78b45;
+}
+
+.stock-mini{
+  margin-top:5px;
+  font-size:11px;
+  color:#888277;
+}
+
+.select{
+  margin-top:15px;
+  width:100%;
+  border:0;
+  padding:12px;
+  border-radius:12px;
+  background:#181713;
+  color:white;
+  font-weight:600;
+  cursor:pointer;
+}
+
+.select:disabled{
+  background:#aaa69e;
+  cursor:not-allowed;
+}
+
+.cart{
+  margin-top:30px;
+  background:#f1ede5;
+  border-radius:22px;
+  padding:20px;
+  display:none;
+}
+
+.cart h3{
+  margin-bottom:12px;
+}
+
+.cart-row{
+  display:flex;
+  justify-content:space-between;
+  padding:10px 0;
+  border-bottom:1px solid #ddd7cc;
+  font-size:14px;
+  gap:10px;
+}
+
+.cart-row span:last-child{
+  font-weight:700;
+  white-space:nowrap;
+}
+
+.total{
+  display:flex;
+  justify-content:space-between;
+  font-weight:700;
+  padding-top:15px;
+  font-size:16px;
+}
+
+.order-btn{
+  width:100%;
+  margin-top:18px;
+  padding:16px;
+  border:0;
+  border-radius:15px;
+  background:#b78b45;
+  color:white;
+  font-size:15px;
+  font-weight:700;
+  cursor:pointer;
+}
+
+.admin-button{
+  width:100%;
+  margin-top:25px;
+  padding:14px;
+  border:1px solid #ded8ce;
+  border-radius:14px;
+  background:#fff;
+  font-weight:700;
+  cursor:pointer;
+  color:#191713;
+}
+
+/* MODAL */
+
+.modal{
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.55);
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+  z-index:20;
+}
+
+.modal-box{
+  background:#fffdf9;
+  width:100%;
+  max-width:390px;
+  max-height:90vh;
+  overflow:auto;
+  border-radius:28px;
+  padding:30px;
+  text-align:center;
+}
+
+.modal-box h2{
+  font-family:'Playfair Display',serif;
+  font-size:28px;
+}
+
+.number{
+  font-size:70px;
+  font-weight:700;
+  margin:15px 0;
+  color:#b78b45;
+}
+
+.modal-total{
+  margin-bottom:20px;
+  font-size:15px;
+  color:#777269;
+}
+
+.close{
+  width:100%;
+  padding:14px;
+  border:0;
+  border-radius:13px;
+  background:#171612;
+  color:white;
+  font-weight:600;
+  cursor:pointer;
+}
+
+/* ADMIN */
+
+.admin-title{
+  text-align:left;
+  margin-bottom:20px;
+}
+
+.admin-title h2{
+  font-family:'Playfair Display',serif;
+}
+
+.stat{
+  background:#f1ede5;
+  border-radius:18px;
+  padding:17px;
+  margin-bottom:12px;
+  text-align:left;
+}
+
+.stat small{
+  color:#817b71;
+}
+
+.stat strong{
+  display:block;
+  font-size:25px;
+  margin-top:5px;
+}
+
+.admin-label{
+  display:block;
+  text-align:left;
+  margin-top:18px;
+  margin-bottom:7px;
+  font-size:13px;
+  font-weight:700;
+}
+
+.input{
+  width:100%;
+  padding:13px;
+  border:1px solid #ddd7cc;
+  border-radius:12px;
+  background:white;
+  font-size:15px;
+}
+
+.admin-action{
+  width:100%;
+  padding:14px;
+  border:0;
+  border-radius:13px;
+  margin-top:10px;
+  font-weight:700;
+  cursor:pointer;
+}
+
+.save{
+  background:#171612;
+  color:white;
+}
+
+.reset{
+  background:#e5ddd0;
+  color:#191713;
+}
+
+.close-admin{
+  background:#b78b45;
+  color:white;
+}
+
+.warning{
+  font-size:11px;
+  color:#8b8378;
+  margin-top:12px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<header>
+
+  <div class="brand">Premium Chicken House</div>
+
+  <h1>AYAM BAPUT</h1>
+
+  <div class="subtitle">
+    Silakan pilih menu favoritmu
+  </div>
+
+  <div class="queue">
+
+    <div>
+      <small>SEDANG DILAYANI</small>
+      <div>Nomor antrian</div>
+    </div>
+
+    <strong id="currentQueue">07</strong>
+
+  </div>
+
+</header>
+
+
+<div class="content">
+
+  <div class="section-title">
+    Menu pilihan
+  </div>
+
+
+  <div class="menu">
+
+    <!-- MENU 1 -->
+
+    <div class="item">
+
+      <div class="item-top">
+
+        <div>
+
+          <h2>
+            Ayam Goreng Bawang Putih
+          </h2>
+
+          <p>
+            Ayam goreng gurih dengan aroma bawang putih.
+          </p>
+
+          <div class="price">
+            Rp13.000
+          </div>
+
+          <div class="stock-mini">
+            Stok: <span id="stock1">100</span>
+          </div>
+
+        </div>
+
+        <div class="icon">
+          🍗
+        </div>
+
+      </div>
+
+      <button
+        class="select"
+        id="btn1"
+        onclick="addItem('Ayam Goreng Bawang Putih',13000)"
+      >
+        + Tambahkan
+      </button>
+
+    </div>
+
+
+    <!-- MENU 2 -->
+
+    <div class="item">
+
+      <div class="item-top">
+
+        <div>
+
+          <h2>
+            Ayam Goreng Baput + Nasi Daun Jeruk
+          </h2>
+
+          <p>
+            Ayam baput dengan nasi daun jeruk yang harum.
+          </p>
+
+          <div class="price">
+            Rp20.000
+          </div>
+
+          <div class="stock-mini">
+            Stok: <span id="stock2">100</span>
+          </div>
+
+        </div>
+
+        <div class="icon">
+          🍚
+        </div>
+
+      </div>
+
+      <button
+        class="select"
+        id="btn2"
+        onclick="addItem('Ayam Goreng Baput + Nasi Daun Jeruk',20000)"
+      >
+        + Tambahkan
+      </button>
+
+    </div>
+
+
+    <!-- MENU 3 -->
+
+    <div class="item">
+
+      <div class="item-top">
+
+        <div>
+
+          <h2>
+            Ayam Goreng Baput + Nasi Biasa
+          </h2>
+
+          <p>
+            Ayam baput dengan nasi putih hangat.
+          </p>
+
+          <div class="price">
+            Rp17.000
+          </div>
+
+          <div class="stock-mini">
+            Stok: <span id="stock3">100</span>
+          </div>
+
+        </div>
+
+        <div class="icon">
+          🍗
+        </div>
+
+      </div>
+
+      <button
+        class="select"
+        id="btn3"
+        onclick="addItem('Ayam Goreng Baput + Nasi Biasa',17000)"
+      >
+        + Tambahkan
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <!-- KERANJANG -->
+
+  <div class="cart" id="cart">
+
+    <h3>
+      Pesananmu
+    </h3>
+
+    <div id="cartItems"></div>
+
+    <div class="total">
+
+      <span>
+        Total
+      </span>
+
+      <span id="totalPrice">
+        Rp0
+      </span>
+
+    </div>
+
+    <button
+      class="order-btn"
+      onclick="takeQueue()"
+    >
+      Ambil Nomor Antrian →
+    </button>
+
+  </div>
+
+
+  <!-- ADMIN BUTTON -->
+
+  <button
+    class="admin-button"
+    onclick="openAdmin()"
+  >
+    ⚙️ Admin & Penjualan Hari Ini
+  </button>
+
+</div>
+
+</div>
+
+
+<!-- MODAL NOMOR ANTRIAN -->
+
+<div class="modal" id="modal">
+
+  <div class="modal-box">
+
+    <div>
+      Pesanan berhasil dibuat
+    </div>
+
+    <h2>
+      Nomor Antrian
+    </h2>
+
+    <div class="number" id="number">
+      08
+    </div>
+
+    <div class="modal-total">
+
+      Total pesanan:
+      <b id="modalTotal">
+        Rp0
+      </b>
+
+    </div>
+
+    <p>
+      Silakan tunggu sampai nomor kamu dipanggil.
+    </p>
+
+    <button
+      class="close"
+      onclick="closeModal()"
+    >
+      Selesai
+    </button>
+
+  </div>
+
+</div>
+
+
+<!-- ADMIN MODAL -->
+
+<div class="modal" id="adminModal">
+
+  <div class="modal-box">
+
+    <div class="admin-title">
+
+      <h2>
+        Admin
+      </h2>
+
+      <p>
+        Penjualan hari ini
+      </p>
+
+    </div>
+
+
+    <div class="stat">
+
+      <small>
+        💰 Total Penjualan
+      </small>
+
+      <strong id="salesToday">
+        Rp0
+      </strong>
+
+    </div>
+
+
+    <div class="stat">
+
+      <small>
+        🧾 Jumlah Transaksi
+      </small>
+
+      <strong id="ordersToday">
+        0
+      </strong>
+
+    </div>
+
+
+    <div class="stat">
+
+      <small>
+        🍗 Ayam Terjual
+      </small>
+
+      <strong id="soldToday">
+        0
+      </strong>
+
+    </div>
+
+
+    <div class="stat">
+
+      <small>
+        📦 Sisa Stok
+      </small>
+
+      <strong id="stockToday">
+        100
+      </strong>
+
+    </div>
+
+
+    <label class="admin-label">
+      Stok harian
+    </label>
+
+    <input
+      class="input"
+      type="number"
+      id="stockInput"
+      min="0"
+      placeholder="Contoh: 100"
+    >
+
+
+    <button
+      class="admin-action save"
+      onclick="saveStock()"
+    >
+      💾 Simpan Stok
+    </button>
+
+
+    <button
+      class="admin-action reset"
+      onclick="resetDay()"
+    >
+      🔄 Mulai Hari Baru
+    </button>
+
+
+    <button
+      class="admin-action close-admin"
+      onclick="closeAdmin()"
+    >
+      Tutup
+    </button>
+
+
+    <div class="warning">
+      Reset hari baru akan menghapus penjualan hari ini
+      dan mengembalikan stok sesuai angka yang dimasukkan.
+    </div>
+
+  </div>
+
+</div>
+
+
+<script>
+
+/* =========================
+   DATA
+========================= */
+
+let cart = {};
+
+let data = JSON.parse(
+  localStorage.getItem("ayamBaputData")
+) || {
+
+  stock:100,
+
+  sales:0,
+
+  orders:0,
+
+  sold:0,
+
+  queue:7
+
+};
+
+
+/* =========================
+   FORMAT RUPIAH
+========================= */
+
+function formatRupiah(number){
+
+  return new Intl.NumberFormat(
+    'id-ID',
+    {
+      style:'currency',
+      currency:'IDR',
+      minimumFractionDigits:0
+    }
+  ).format(number);
+
+}
+
+
+/* =========================
+   SAVE DATA
+========================= */
+
+function saveData(){
+
+  localStorage.setItem(
+    "ayamBaputData",
+    JSON.stringify(data)
+  );
+
+}
+
+
+/* =========================
+   UPDATE DISPLAY
+========================= */
+
+function updateDisplay(){
+
+  document.getElementById("currentQueue").innerText =
+    String(data.queue).padStart(2,"0");
+
+
+  document.getElementById("stock1").innerText =
+    data.stock;
+
+  document.getElementById("stock2").innerText =
+    data.stock;
+
+  document.getElementById("stock3").innerText =
+    data.stock;
+
+
+  document.getElementById("btn1").disabled =
+    data.stock <= 0;
+
+  document.getElementById("btn2").disabled =
+    data.stock <= 0;
+
+  document.getElementById("btn3").disabled =
+    data.stock <= 0;
+
+}
+
+
+/* =========================
+   ADD ITEM
+========================= */
+
+function addItem(name,price){
+
+  if(data.stock <= 0){
+
+    alert("Maaf, stok ayam hari ini sudah habis.");
+
+    return;
+
+  }
+
+
+  if(cart[name]){
+
+    cart[name].qty++;
+
+  }else{
+
+    cart[name] = {
+
+      price:price,
+
+      qty:1
+
+    };
+
+  }
+
+
+  renderCart();
+
+}
+
+
+/* =========================
+   RENDER CART
+========================= */
+
+function renderCart(){
+
+  const cartBox =
+    document.getElementById("cart");
+
+  const cartItems =
+    document.getElementById("cartItems");
+
+
+  cartBox.style.display =
+    "block";
+
+  cartItems.innerHTML =
+    "";
+
+
+  let total = 0;
+
+
+  for(let item in cart){
+
+    const dataItem =
+      cart[item];
+
+    const subtotal =
+      dataItem.price *
+      dataItem.qty;
+
+
+    total += subtotal;
+
+
+    let row =
+      document.createElement("div");
+
+
+    row.className =
+      "cart-row";
+
+
+    row.innerHTML = `
+
+      <span>
+        ${dataItem.qty}× ${item}
+      </span>
+
+      <span>
+        ${formatRupiah(subtotal)}
+      </span>
+
+    `;
+
+
+    cartItems.appendChild(row);
+
+  }
+
+
+  document.getElementById(
+    "totalPrice"
+  ).innerText =
+    formatRupiah(total);
+
+}
+
+
+/* =========================
+   TAKE QUEUE
+========================= */
+
+function takeQueue(){
+
+  if(
+    Object.keys(cart).length === 0
+  ){
+
+    alert(
+      "Pilih menu terlebih dahulu!"
+    );
+
+    return;
+
+  }
+
+
+  let total = 0;
+
+  let jumlahAyam = 0;
+
+
+  for(let item in cart){
+
+    total +=
+      cart[item].price *
+      cart[item].qty;
+
+    jumlahAyam +=
+      cart[item].qty;
+
+  }
+
+
+  if(
+    jumlahAyam > data.stock
+  ){
+
+    alert(
+      "Stok ayam tidak cukup."
+    );
+
+    return;
+
+  }
+
+
+  /* Kurangi stok */
+
+  data.stock -=
+    jumlahAyam;
+
+
+  /* Penjualan */
+
+  data.sales +=
+    total;
+
+
+  data.orders++;
+
+
+  data.sold +=
+    jumlahAyam;
+
+
+  /* Nomor antrian */
+
+  data.queue++;
+
+
+  saveData();
+
+
+  document.getElementById(
+    "number"
+  ).innerText =
+    String(data.queue)
+    .padStart(2,"0");
+
+
+  document.getElementById(
+    "currentQueue"
+  ).innerText =
+    String(data.queue)
+    .padStart(2,"0");
+
+
+  document.getElementById(
+    "modalTotal"
+  ).innerText =
+    formatRupiah(total);
+
+
+  document.getElementById(
+    "modal"
+  ).style.display =
+    "flex";
+
+
+  cart = {};
+
+
+  document.getElementById(
+    "cart"
+  ).style.display =
+    "none";
+
+
+  updateDisplay();
+
+}
+
+
+/* =========================
+   CLOSE ORDER
+========================= */
+
+function closeModal(){
+
+  document.getElementById(
+    "modal"
+  ).style.display =
+    "none";
+
+
+  document.getElementById(
+    "cartItems"
+  ).innerHTML =
+    "";
+
+
+  document.getElementById(
+    "totalPrice"
+  ).innerText =
+    "Rp0";
+
+}
+
+
+/* =========================
+   OPEN ADMIN
+========================= */
+
+function openAdmin(){
+
+  document.getElementById(
+    "adminModal"
+  ).style.display =
+    "flex";
+
+
+  updateAdmin();
+
+}
+
+
+/* =========================
+   UPDATE ADMIN
+========================= */
+
+function updateAdmin(){
+
+  document.getElementById(
+    "salesToday"
+  ).innerText =
+    formatRupiah(data.sales);
+
+
+  document.getElementById(
+    "ordersToday"
+  ).innerText =
+    data.orders;
+
+
+  document.getElementById(
+    "soldToday"
+  ).innerText =
+    data.sold;
+
+
+  document.getElementById(
+    "stockToday"
+  ).innerText =
+    data.stock;
+
+
+  document.getElementById(
+    "stockInput"
+  ).value =
+    data.stock;
+
+}
+
+
+/* =========================
+   SAVE STOCK
+========================= */
+
+function saveStock(){
+
+  let value =
+    parseInt(
+      document.getElementById(
+        "stockInput"
+      ).value
+    );
+
+
+  if(
+    isNaN(value) ||
+    value < 0
+  ){
+
+    alert(
+      "Masukkan jumlah stok yang benar."
+    );
+
+    return;
+
+  }
+
+
+  data.stock =
+    value;
+
+
+  saveData();
+
+  updateDisplay();
+
+  updateAdmin();
+
+
+  alert(
+    "Stok berhasil disimpan!"
+  );
+
+}
+
+
+/* =========================
+   RESET DAY
+========================= */
+
+function resetDay(){
+
+  let yakin =
+    confirm(
+      "Yakin mulai hari baru? Penjualan hari ini akan direset."
+    );
+
+
+  if(!yakin){
+
+    return;
+
+  }
+
+
+  let newStock =
+    parseInt(
+      document.getElementById(
+        "stockInput"
+      ).value
+    );
+
+
+  if(
+    isNaN(newStock) ||
+    newStock < 0
+  ){
+
+    newStock = 100;
+
+  }
+
+
+  data.stock =
+    newStock;
+
+  data.sales =
+    0;
+
+  data.orders =
+    0;
+
+  data.sold =
+    0;
+
+  data.queue =
+    0;
+
+
+  saveData();
+
+  updateDisplay();
+
+  updateAdmin();
+
+
+  alert(
+    "Hari baru dimulai! Stok: " +
+    newStock
+  );
+
+}
+
+
+/* =========================
+   CLOSE ADMIN
+========================= */
+
+function closeAdmin(){
+
+  document.getElementById(
+    "adminModal"
+  ).style.display =
+    "none";
+
+}
+
+
+/* =========================
+   START
+========================= */
+
+updateDisplay();
+
+</script>
+
+</body>
+</html>
